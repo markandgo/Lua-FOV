@@ -101,7 +101,12 @@ function love.draw()
 		local col = map[x]
 		for y = 1,#col do
 			if visible[x] and visible[x][y] == 1 then
-				love.graphics.setColor(0,255,0)
+				local dx,dy = x-px,y-py
+				if math.abs(dx) == math.abs(dy) or dy == 0 or dx == 0 then
+					love.graphics.setColor(255,0,0)
+				else
+					love.graphics.setColor(0,255,0) 
+				end
 			else
 				love.graphics.setColor(64,64,64)
 			end

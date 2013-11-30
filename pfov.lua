@@ -136,7 +136,7 @@ local fov = function(x0,y0,radius,isTransparent,onVisible,permissiveness)
 						-- add a another view for the next column
 						if not prev_cell_solid and y < yi then
 							-- print 'Creating a new view...'
-							local bx,by = x+1,y+1
+							local bx,by = x,y+1
 							local new_view = {
 								-- Inherit the current view steep line
 								steep       = {steep[1],steep[2],steep[3],steep[4]},
