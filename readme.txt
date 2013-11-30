@@ -10,6 +10,10 @@ The first callback is to check if a cell blocks light. The second callback
 gets called when a cell is visible. A light origin and radius is also 
 required for input.
 
+At permissiveness level 5, the light source acts as a point at the center of
+the square, and at permissiveness level 10, the entire square is the light 
+source.
+
 More information can be found by searching:
 FOV using recursive shadowcasting - Björn Bergström
 Precise permissive field of view - Jonathon Duerig

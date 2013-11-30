@@ -18,8 +18,6 @@ function generateMap()
 			px,py = x,y
 		end
 	end,false)
-	
-	generateVisible()
 end
 
 function generateVisible()
@@ -39,6 +37,7 @@ end
 
 function love.load()
 	generateMap()
+	generateVisible()
 	
 	if love.keyboard.setKeyRepeat then 
 		love.keyboard.setKeyRepeat(0.3,0.1)
