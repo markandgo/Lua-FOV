@@ -71,7 +71,7 @@ local fov = function(x0,y0,radius,isTransparent,onVisible,permissiveness)
 	   
 	   Permissiveness is from 0 to 10 with 0 being the least permissive
 	]]
-	permissiveness = permissiveness/10 or 0.5
+	permissiveness = (permissiveness and permissiveness/10) or 0.5
 	if permissiveness > 10 or permissiveness < 0 then
 		error 'Permissiveness must be between 0 and 10'
 	end
