@@ -51,7 +51,7 @@ local fov = function(x0,y0,radius,isTransparent,onVisible,permissiveness)
 	-- **NOTE** Assumed orientation in notes is x+ right, y+ up
 	
 	--[[
-	Quadrant designation
+	Octant designation
 	   \  |  /
 	   4\3|2/1
 	 ____\|/____
@@ -59,8 +59,8 @@ local fov = function(x0,y0,radius,isTransparent,onVisible,permissiveness)
 	   5/6|7\8
 	   /  |  \
 	   
-	   All calculations is done on the first quadrant
-	   To calculate FOV on other quadrants, reflect the cells onto the first quadrant
+	   All calculations is done on the first octant
+	   To calculate FOV on other octants, reflect the cells onto the first octant
 	   
 	   The bottom left corner is the coordinates of a cell:
 	   
