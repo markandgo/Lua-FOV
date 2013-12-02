@@ -3,7 +3,7 @@ Permissive field of view in Lua
 This module borrows from recursive shadowcasting and precise permissive 
 FOV. The demo requires LOVE.
 
-The FOV is a square for easy of computation. This is acceptable when 
+The FOV is a square for ease of computation. This is acceptable when 
 using Chebyshev distance. Permissiveness is from 0 to 10, with 10 being 
 the most permissive field of view. The fov function accepts two callbacks. 
 The first callback is to check if a cell blocks light. The second callback 
