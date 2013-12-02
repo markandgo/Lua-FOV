@@ -1,10 +1,11 @@
 rot = require 'rotLove/rotLove/rotLove'
 fov = require 'pfov'
 
-tw,th = 16,16
-px,py = 1,1
-radius= 20
-perm  = 0
+tw,th      = 16,16
+px,py      = 1,1
+radius     = 5
+radius_type= 'square'
+perm       = 0
 
 function generateMap()
 	bmap    = rot.Map.Brogue(49,30)
@@ -28,6 +29,11 @@ function generateVisible()
 	end
 	
 	local onVisible = function(x,y)
+		local dx,dy = x-px,y-py
+		if (dx*dx + dy*dy) > radius*radius + 1 and radius_type == 'circle' then 
+			return 
+		end
+		
 		visible[x]    = visible[x] or {}
 		visible[x][y] = 1
 	end
@@ -46,6 +52,15 @@ end
 
 function love.keypressed(k)
 	local dx,dy = 0,0
+	if k == 'tab' then
+		radius_type = radius_type == 'circle' and 'square' or 'circle'
+	end
+	if k == '1' then
+		radius = math.max(0,radius-1)
+	end
+	if k == '2' then
+		radius = radius+1
+	end
 	if k == 'kp4' or k == 'left' then
 		dx = -1
 	end
@@ -126,6 +141,8 @@ function love.draw()
 		'Press space to randomize',
 		'Press insert/delete to insert/dig blocks',
 		'Press arrow keys or numpad to move',
+		'Press 1/2 to decrease/increase FOV radius: '..radius,
+		'Press tab to toggle FOV type: '..radius_type,
 	}
 	
 	love.graphics.setColor(255,255,255)
