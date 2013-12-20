@@ -30,7 +30,7 @@ function generateVisible()
 	
 	local onVisible = function(x,y)
 		local dx,dy = x-px,y-py
-		if (dx*dx + dy*dy) > radius*radius + 1 and radius_type == 'circle' then 
+		if (dx*dx + dy*dy) > radius*radius + radius and radius_type == 'circle' then 
 			return 
 		end
 		
