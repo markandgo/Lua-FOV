@@ -5,10 +5,16 @@ tw,th      = 16,16
 px,py      = 1,1
 radius     = 5
 radius_type= 'square'
-perm       = 0
+perm       = 5
+angle      = 0
+angle_size = 360
+delta      = 5
+show_help  = true
+width      = 49
+height     = 30
 
 function generateMap()
-	bmap    = rot.Map.Brogue(49,30)
+	bmap    = rot.Map.Brogue(width,height)
 	map     = {}
 	
 	bmap:create(function(x,y,type)
@@ -38,7 +44,7 @@ function generateVisible()
 		visible[x][y] = 1
 	end
 	
-	fov(px,py,radius,isTransparent,onVisible,perm)
+	fov(px,py,radius,isTransparent,onVisible,perm,math.rad(angle-angle_size/2),math.rad(angle+angle_size/2))
 end
 
 function love.load()
@@ -52,6 +58,9 @@ end
 
 function love.keypressed(k)
 	local dx,dy = 0,0
+	if k == 'f1' then
+		show_help = not show_help
+	end
 	if k == 'tab' then
 		radius_type = radius_type == 'circle' and 'square' or 'circle'
 	end
@@ -60,6 +69,18 @@ function love.keypressed(k)
 	end
 	if k == '2' then
 		radius = radius+1
+	end
+	if k == 'a' then
+		angle = angle - delta
+	end
+	if k == 'd' then
+		angle = angle + delta
+	end
+	if k == 's' then
+		angle_size = angle_size - delta
+	end
+	if k == 'w' then
+		angle_size = angle_size + delta
 	end
 	if k == 'kp4' or k == 'left' then
 		dx = -1
@@ -107,13 +128,16 @@ function love.keypressed(k)
 		px,py = px+dx,py+dy
 	end
 	
+	angle = angle % 360
+	angle_size = math.max(math.min(angle_size,360),0)
+	
 	generateVisible()
 end
 
 function love.draw()
-	for x = 1,#map do
+	for x = 1,width do
 		local col = map[x]
-		for y = 1,#col do
+		for y = 1,height do
 			if visible[x] and visible[x][y] == 1 then
 				local dx,dy = x-px,y-py
 				if math.abs(dx) == math.abs(dy) or dy == 0 or dx == 0 then
@@ -135,16 +159,21 @@ function love.draw()
 		end
 	end
 	
-	local t = {
-		'Permissive level: '..perm,
-		'Press +/- to change permissiveness',
-		'Press space to randomize',
-		'Press insert/delete to insert/dig blocks',
-		'Press arrow keys or numpad to move',
-		'Press 1/2 to decrease/increase FOV radius: '..radius,
-		'Press tab to toggle FOV type: '..radius_type,
-	}
-	
-	love.graphics.setColor(255,255,255)
-	love.graphics.print(table.concat(t,'\n'),0,0)
+	if show_help then
+		local t = {
+			'Press f1 to toggle help',
+			'Permissive level: '..perm,
+			'Press +/- to change permissiveness',
+			'Press space to randomize',
+			'Press insert/delete to insert/dig blocks',
+			'Press arrow keys or numpad to move',
+			'Press 1/2 to decrease/increase FOV radius: '..radius,
+			'Press tab to toggle FOV type: '..radius_type,
+			'Press a/d to change viewing angle: '..angle,
+			'Press s/w to change cone size: '..angle_size,
+		}
+		
+		love.graphics.setColor(255,255,255)
+		love.graphics.print(table.concat(t,'\n'),0,0)
+	end
 end
