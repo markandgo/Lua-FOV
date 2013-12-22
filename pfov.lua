@@ -172,7 +172,6 @@ local fov = function(x0,y0,radius,isTransparent,onVisible,permissiveness,start_a
 								steep       = {steep[1],steep[2],steep[3],steep[4]},
 								steepBump   = view.steepBump,
 								-- Shallow line bumps into top left corner of block
-								-- Shallow line also starts at top left corner of origin cell
 								shallow     = {1-permissiveness,1*permissiveness,bx,by},
 								shallowBump = {bx,by,parent = view.shallowBump},
 							}
