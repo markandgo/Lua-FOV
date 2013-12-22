@@ -114,6 +114,9 @@ local fov = function(x0,y0,radius,isTransparent,onVisible,permissiveness,start_a
 	
 	local octant = first_octant
 	
+	-- Always see the origin
+	onVisible(x0,y0)
+	
 	-- Calculate the FOV by dividing it into octants
 	while true do
 		local coords = octants[octant]
