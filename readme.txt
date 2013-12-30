@@ -1,24 +1,41 @@
-Permissive field of view in Lua
+Field of view algorithms in Lua.
 
-This module borrows from recursive shadowcasting and precise permissive 
-FOV. The demo requires LOVE.
+Two algorithms are available: 
+ -Recursive shadowcasting 
+ -Precise permissive 
 
-The FOV is a square for ease of computation. This is acceptable when 
-using Chebyshev distance. Permissiveness is from 0 to 10, with 10 being 
-the most permissive field of view. The fov function accepts two callbacks. 
-The first callback is to check if a cell blocks light. The second callback 
-gets called when a cell is visible. A light origin and radius is also 
-required for input.
+The demo requires LOVE.
 
-At permissiveness level 5 (default), the light source acts as a point at 
-the center of the square, and at permissiveness level 10, the entire 
-square is the light source.
-
-The user can specify the starting angle and last angle as optional 
-arguments to set the size of the viewing cone. The default field of view 
-is 360 degrees. One may get unexpected results with large or "odd" 
-angles. This is due to rounding errors with floats so it's best to clamp
-angles to 0-360 degrees.
+Example code:
+````````````````````````````````````````````````````````````````````````
+	fov = require 'fov'
+	
+	-- Required callbacks:
+	function isTransparent(x,y)
+		-- return true if the cell is non-blocking
+	end
+	
+	function onVisible(x,y)
+		-- gets called when a square is visible
+	end
+	
+	-- Required:
+	radius        = 5   -- sight radius
+	px,py         = 0,0 -- position of light origin
+	
+	-- Optional:
+	start_angle   = 0         -- starting angle for FOV arc
+	last_angle    = math.pi*2 -- last angle for FOV arc
+	                          -- default: 360 degrees FOV
+	                          
+	permissiveness= 10 -- 0-10, 10 being perfectly symmetric FOV
+	                   -- default: 10
+	                   -- not available for Recursive Shadowcasting
+	                   
+	-- Calculate fov:
+	fov(px,py,radius,isTransparent,onVisible,
+	start_angle,last_angle,permissiveness)
+````````````````````````````````````````````````````````````````````````
 
 More information can be found by searching:
 FOV using recursive shadowcasting - Björn Bergström

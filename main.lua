@@ -1,30 +1,40 @@
 rot = require 'rotLove/rotLove/rotLove'
-fov = require 'pfov'
+fov_list = {
+	{require 'ppfov','precise permissive'},
+	{require 'rsfov','recursive shadowcast'},
+}
 
-tw,th      = 16,16
+fov_index = 1
+fov = fov_list[fov_index][1]
+
+tw,th      = 8,8
 px,py      = 1,1
-radius     = 5
+radius     = 20
 radius_type= 'square'
 perm       = 5
 angle      = 0
 angle_size = 360
 delta      = 5
 show_help  = true
-width      = 49
-height     = 30
+width      = 98
+height     = 60
+
+run_symmetry_test = false
+fail_visible      = {}
 
 function generateMap()
-	bmap    = rot.Map.Brogue(width,height)
+	bmap    = rot.Map.Cellular(width,height)
+	bmap:randomize(0.35)
 	map     = {}
 	
 	bmap:create(function(x,y,type)
 		map[x]    = map[x] or {}
 		map[x][y] = type
-		rand = math.random(1,2)
-		if rand == 1 and type == 0 then
-			px,py = x,y
-		end
 	end,false)
+	
+	repeat
+		px,py = math.random(1,width),math.random(1,height)
+	until map[px][py] == 0
 end
 
 function generateVisible()
@@ -43,11 +53,39 @@ function generateVisible()
 		visible[x]    = visible[x] or {}
 		visible[x][y] = 1
 	end
+		
+	fov(px,py,radius,isTransparent,onVisible,math.rad(angle-angle_size/2),math.rad(angle+angle_size/2),perm)
 	
-	fov(px,py,radius,isTransparent,onVisible,perm,math.rad(angle-angle_size/2),math.rad(angle+angle_size/2))
+	if run_symmetry_test then
+		local ex,ey        = 0,0
+		fail_visible       = {}
+		
+		local onEnemyVision = function(x,y)
+			local dx,dy = x-ex,y-ey
+			if (dx*dx + dy*dy) > radius*radius + radius and radius_type == 'circle' then 
+				return 
+			end
+			
+			enemyVision[x]    = enemyVision[x] or {}
+			enemyVision[x][y] = 1
+		end
+		
+		for x,t in pairs(visible) do
+			for y,vis in pairs(t) do
+				enemyVision = {}
+				ex,ey       = x,y
+				fov(x,y,radius,isTransparent,onEnemyVision,nil,nil,perm)
+				if not (enemyVision[px] and enemyVision[px][py]) then
+					fail_visible[x]    = fail_visible[x] or {}
+					fail_visible[x][y] = 1
+				end
+			end
+		end
+	end
 end
 
 function love.load()
+	math.randomseed(os.time())
 	generateMap()
 	generateVisible()
 	
@@ -60,6 +98,14 @@ function love.keypressed(k)
 	local dx,dy = 0,0
 	if k == 'f1' then
 		show_help = not show_help
+	end
+	if k == 'f2' then
+		run_symmetry_test = not run_symmetry_test
+	end
+	if k == 'f3' then
+		fov_index = fov_index + 1
+		if fov_index > #fov_list then fov_index = 1 end
+		fov = fov_list[fov_index][1]
 	end
 	if k == 'tab' then
 		radius_type = radius_type == 'circle' and 'square' or 'circle'
@@ -124,7 +170,8 @@ function love.keypressed(k)
 		map[px][py+1] = 0
 	end
 	if k == ' ' then generateMap() end
-	if map[px+dx][py+dy] == 0 then
+	
+	if map[px+dx] and map[px+dx][py+dy] then
 		px,py = px+dx,py+dy
 	end
 	
@@ -138,30 +185,40 @@ function love.draw()
 	for x = 1,width do
 		local col = map[x]
 		for y = 1,height do
-			if visible[x] and visible[x][y] == 1 then
-				local dx,dy = x-px,y-py
-				if math.abs(dx) == math.abs(dy) or dy == 0 or dx == 0 then
-					love.graphics.setColor(255,0,0)
-				else
-					love.graphics.setColor(0,255,0) 
-				end
+			-- draw map
+			if map[x] and map[x][y] == 1 then
+				love.graphics.setColor(0,0,0)
 			else
 				love.graphics.setColor(64,64,64)
 			end
-			if x == px and y == py then
-				love.graphics.setColor(255,255,255)
-				love.graphics.print('@',x*tw,y*th)
-			elseif col[y] == 0 then
-				love.graphics.print('.',x*tw,y*th)
-			else
-				love.graphics.print('#',x*tw,y*th)
+			love.graphics.rectangle('fill',x*tw,y*th,tw,th)
+			
+			-- vision color overlay
+			if visible[x] and visible[x][y] == 1 then
+				local dx,dy = x-px,y-py
+				if map[x][y] == 1 then
+					love.graphics.setColor(255,255,0,255) 
+				else
+					love.graphics.setColor(255,255,0,64) 
+				end
+				-- non-symmetric cell color overlay
+				if run_symmetry_test and fail_visible[x] and fail_visible[x][y] then
+					love.graphics.setColor(255,0,0)
+				end
 			end
+			love.graphics.rectangle('fill',x*tw,y*th,tw,th)
 		end
 	end
+	
+	-- draw player
+	love.graphics.setColor(0,255,0)
+	love.graphics.rectangle('fill',px*tw,py*th,tw,th)
 	
 	if show_help then
 		local t = {
 			'Press f1 to toggle help',
+			'Press f2 to enable symmetry test: '..tostring(run_symmetry_test),
+			'Press f3 to switch algorithm: '..fov_list[fov_index][2],
 			'Permissive level: '..perm,
 			'Press +/- to change permissiveness',
 			'Press space to randomize',
