@@ -1,13 +1,13 @@
-Field of view algorithms in Lua.
+# __Field of view algorithms in Lua.__
 
 Two algorithms are available: 
- -Recursive shadowcasting 
- -Precise permissive 
+* Recursive shadowcasting 
+* Precise permissive 
 
-The demo requires LOVE.
+**The demo requires LOVE.**
 
-Example code:
-````````````````````````````````````````````````````````````````````````
+__Example code:__
+```lua
 	fov = require 'fov'
 	
 	-- Required callbacks:
@@ -35,7 +35,7 @@ Example code:
 	-- Calculate fov:
 	fov(px,py,radius,isTransparent,onVisible,
 	start_angle,last_angle,permissiveness)
-````````````````````````````````````````````````````````````````````````
+```
 
 More information can be found by searching:
 FOV using recursive shadowcasting - Björn Bergström
